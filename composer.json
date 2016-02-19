@@ -1,5 +1,5 @@
 {
-    "name": "gpgkd906/code_service",
+    "name": "gpgkd906/code-generator",
     "require": {
         "nikic/php-parser": "^2.0"
     },
