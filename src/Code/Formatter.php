@@ -25,7 +25,9 @@ class Formatter
     static public function getPrettyPrinter ()
     {
         if(self::$prettyPrinter === null) {
-            self::$prettyPrinter = new PrettyPrinter\Standard;
+            self::$prettyPrinter = new PrettyPrinter\Standard([
+                'shortArraySyntax' => true
+            ]);
         }
         return self::$prettyPrinter;
     }

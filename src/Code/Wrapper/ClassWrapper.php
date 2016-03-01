@@ -58,33 +58,14 @@ class ClassWrapper extends AbstractWrapper
         $node = $this->findNode('Stmt_TraitUse', function($stmt) use ($test) {
             return $stmt->traits[0]->parts === $test->parts;            
         });
-        return new TraitUseWrapper($node);
+        if($node) {
+            return new TraitUseWrapper($node);
+        }
     }
 
     public function appendConst($const, $value = null)
     {
-        switch(true) {
-        case is_string($value):
-            $value = new Scalar\String_($value);
-            break;
-        case is_integer($value):
-            $value = new Scalar\LNumber($value);
-            break;
-        case is_float($value):
-            $value = new Scalar\DNumber($value);
-            break;
-        case is_bool($value):
-            if($value) {
-                $value = new Expr\ConstFetch(new Name('true'));
-            } else {
-                $value = new Expr\ConstFetch(new Name('false'));
-            }
-            break;
-        default:
-            $value = new Expr\ConstFetch(new Name('null'));
-            break;
-        }
-        $const = new Const_($const, $value);
+        $const = new Const_($const, $this->makeValue($value));
         $classConst = new ClassConst([$const]);
         $this->addStmt($classConst);
     }
@@ -94,7 +75,9 @@ class ClassWrapper extends AbstractWrapper
         $node = $this->findNode('Stmt_ClassConst', function($stmt) use ($const) {
             return $stmt->consts[0]->name === $const;
         });
-        return new ConstWrapper($node);
+        if($node) {
+            return new ConstWrapper($node);
+        }
     }
     
     public function appendProperty($property, $value = null, $access = 'private')
@@ -112,7 +95,9 @@ class ClassWrapper extends AbstractWrapper
         $node = $this->findNode('Stmt_Property', function($stmt) use($property) {
             return $stmt->props[0]->name === $property;
         });
-        return new PropertyWrapper($node);
+        if($node) {
+            return new PropertyWrapper($node);
+        }
     }
 
     public function appendMethod($name, $access = 'public')
@@ -129,7 +114,9 @@ class ClassWrapper extends AbstractWrapper
         $node = $this->findNode('Stmt_ClassMethod', function($stmt) use($method) {
             return $stmt->name === $method;
         });
-        return new FuncWrapper($node);
+        if($node) {
+            return new FuncWrapper($node);
+        }
     }
 
     private function findNode($nodeType, $finder)

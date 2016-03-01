@@ -58,4 +58,33 @@ class AbstractWrapper
     {
         return $this->stmts;
     }
+
+    public function makeValue($value)
+    {
+        switch(true) {
+        case is_string($value):
+            $value = new Scalar\String_($value);
+            break;
+        case is_integer($value):
+            $value = new Scalar\LNumber($value);
+            break;
+        case is_float($value):
+            $value = new Scalar\DNumber($value);
+            break;
+        case is_bool($value):
+            if($value) {
+                $value = new Expr\ConstFetch(new Name('true'));
+            } else {
+                $value = new Expr\ConstFetch(new Name('false'));
+            }
+            break;
+        case is_array($value):
+            $value = new Expr\Array_($value);
+            break;
+        default:
+            $value = new Expr\ConstFetch(new Name('null'));
+            break;
+        }
+        return $value;
+    }
 }
