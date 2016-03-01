@@ -29,8 +29,11 @@ class PropertyWrapper extends AbstractWrapper
         }
     }
     
-    public function setDefault($value)
+    public function setValue($value)
     {
-        $this->getNode()->props[0]->default = $this->makeValue($value);
+        $factory = $this->getFactory();
+        $property = $factory->property('');
+        $property->setDefault($value);        
+        $this->getNode()->props[0]->default = $property->getNode()->props[0]->default;
     }
 }
