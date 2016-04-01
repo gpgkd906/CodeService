@@ -13,11 +13,13 @@ use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Const_;
 use PhpParser\Node\Scalar;
 use PhpParser\Node\Expr;
+use PhpParser\Comment\Doc;
 
 class AbstractWrapper
 {
     static private $factory = null;
     private $stmts = null;
+    protected $comment = null;
     
     public function __construct($node = null)
     {
@@ -86,5 +88,59 @@ class AbstractWrapper
             break;
         }
         return $value;
+    }
+
+    public function nodeWalk($call, $nodeType = null)
+    {
+        if($nodeType !== null) {
+            if($this->getNode()) {
+                foreach($this->getNode()->stmts as $stmt) {
+                    if($stmt->getType() !== $nodeType) {
+                        continue;
+                    }
+                    call_user_func($call, $stmt);
+                }
+            }
+        } else {
+            foreach($this->getNode()->stmts as $stmt) {
+                call_user_func($call, $stmt);
+            }
+        }
+    }
+    
+    public function getComment()
+    {
+        if($this->comment === null) {
+            $this->comment = $this->getNode()->getDocComment();
+            $node = $this->getNode();
+            if($this->comment === null) {
+                $this->comment = new Doc("");
+                $this->getNode()->setAttribute("comments", [$this->comment]);
+            }
+        }
+        return $this->comment->getText();
+    }
+
+    public function setComment($comment)
+    {
+        $this->getComment();
+        $this->comment->setText($comment);
+    }
+
+    public function findNode($nodeType, $finder)
+    {
+        foreach($this->getNode()->stmts as $stmt) {
+            if($stmt->getType() !== $nodeType) {
+                continue;
+            }
+            if(call_user_func($finder, $stmt)) {
+                return $stmt;
+            }
+        }
+    }
+
+    public function getNodeApi()
+    {
+        return get_class_methods($this->getNode());
     }
 }

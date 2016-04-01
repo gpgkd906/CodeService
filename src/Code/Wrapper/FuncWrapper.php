@@ -74,4 +74,13 @@ class FuncWrapper extends AbstractWrapper
             }
         }
     }
+
+    public function paramWalk($call)
+    {
+        $node = $this->getNode();
+        foreach($node->params as $paramNode) {
+            $param = new ParamWrapper($paramNode);
+            call_user_func($call, $param);
+        }
+    }
 }

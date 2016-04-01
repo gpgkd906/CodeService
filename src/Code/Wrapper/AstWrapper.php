@@ -12,6 +12,7 @@ use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Const_;
 use PhpParser\Node\Scalar;
 use PhpParser\Node\Expr;
+use PhpParser\Comment\Doc;
 
 class AstWrapper extends AbstractWrapper
 {
@@ -144,5 +145,40 @@ class AstWrapper extends AbstractWrapper
     public function setClass($class)
     {
         $this->getClass()->setName($class);
+    }
+
+    public function isEmpty()
+    {
+        return empty($this->getNode());
+    }
+
+    public function getComment()
+    {
+        if($this->isEmpty()) {
+            return false;
+        }
+        if($this->comment === null) {            
+            $this->comment = $this->getNode()[0]->getDocComment();
+            $node = $this->getNode()[0];
+            if($this->comment === null) {
+                $this->comment = new Doc("");
+                $node->setAttribute("comments", [$this->comment]);
+            }
+        }
+        return $this->comment->getText();
+    }
+
+    public function setComment($comment)
+    {
+        if($this->isEmpty()) {
+            return false;
+        }
+        $this->getComment();
+        $this->comment->setText($comment);
+    }
+    
+    public function toCode()
+    {
+        return "<?php " . PHP_EOL . PHP_EOL . $this->toString();
     }
 }

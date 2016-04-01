@@ -119,18 +119,14 @@ class ClassWrapper extends AbstractWrapper
         }
     }
 
-    private function findNode($nodeType, $finder)
+    public function methodWalk($call)
     {
-        foreach($this->getNode()->stmts as $stmt) {
-            if($stmt->getType() !== $nodeType) {
-                continue;
-            }
-            if(call_user_func($finder, $stmt)) {
-                return $stmt;
-            }
-        }
+        $this->nodeWalk(function($method) use ($call) {
+            $method = new FuncWrapper($method);
+            call_user_func($call, $method);
+        }, 'Stmt_ClassMethod');
     }
-
+    
     public function addStmt($stmt)
     {
         $sort = [

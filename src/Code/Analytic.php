@@ -67,6 +67,7 @@ class Analytic
         $traverser = self::getTraverser();
         $traverser->addVisitor(new NodeVisitor($ast));
         $traverser->traverse($stmts);
+        self::$traverser = null;
         return $ast;
     }
     
