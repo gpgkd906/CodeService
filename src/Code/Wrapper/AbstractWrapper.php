@@ -33,6 +33,11 @@ class AbstractWrapper
         return $this->stmts;
     }
     
+    public function getName()
+    {
+        return $this->getNode()->name;
+    }
+    
     protected function getFactory()
     {
         if(self::$factory === null) {

@@ -21,11 +21,6 @@ class ClassWrapper extends AbstractWrapper
         'Stmt_ClassMethod' => [],        
     ];
 
-    public function getName()
-    {
-        return $this->getNode()->name;
-    }
-
     public function setName($newClass)
     {
         $this->getNode()->name = $newClass;
@@ -127,6 +122,15 @@ class ClassWrapper extends AbstractWrapper
         }, 'Stmt_ClassMethod');
     }
     
+    public function propertyWalk($call)
+    {
+        $this->nodeWalk(function($property) use ($call) {
+            $property = new PropertyWrapper($property);
+            call_user_func($call, $property);
+        }, 'Stmt_Property');
+    }
+    
+
     public function addStmt($stmt)
     {
         $sort = [

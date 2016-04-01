@@ -137,6 +137,11 @@ class AstWrapper extends AbstractWrapper
         return $this->classWrapper;
     }
 
+    public function hasClass()
+    {
+        return !empty($this->class);
+    }
+
     public function setNamespace($namespace)
     {
         $this->getNamespace()->setName($namespace);

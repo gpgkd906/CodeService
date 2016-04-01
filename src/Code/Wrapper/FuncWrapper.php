@@ -73,7 +73,7 @@ class FuncWrapper extends AbstractWrapper
                 return new ParamWrapper($paramNode);
             }
         }
-    }
+    }    
 
     public function paramWalk($call)
     {

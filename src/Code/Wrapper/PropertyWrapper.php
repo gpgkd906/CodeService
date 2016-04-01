@@ -6,16 +6,22 @@ use PhpParser\Node\Stmt\Class_;
 
 class PropertyWrapper extends AbstractWrapper
 {
-    public function setAccess($access)
-    {
-        $accessTable = [
+    static private $accessTable = [
             'public' => Class_::MODIFIER_PUBLIC,
             'protected' => Class_::MODIFIER_PROTECTED,
             'private' => Class_::MODIFIER_PRIVATE,
-        ];
-        if(isset($accessTable[$access])) {
-            $this->getNode()->type = $accessTable[$access];
+    ];
+    
+    public function setAccess($access)
+    {
+        if(isset(self::$accessTable[$access])) {
+            $this->getNode()->type = self::$accessTable[$access];
         }
+    }
+
+    public function getAccess()
+    {
+        return array_search($this->getNode()->type, self::$accessTable);
     }
     
     public function setStatic($static = true)
@@ -32,5 +38,10 @@ class PropertyWrapper extends AbstractWrapper
     public function setDefault($value)
     {
         $this->getNode()->props[0]->default = $this->makeValue($value);
+    }
+
+    public function getDefault()
+    {
+        
     }
 }
