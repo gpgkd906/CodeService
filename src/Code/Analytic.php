@@ -19,15 +19,6 @@ class Analytic
     static private $parser = null;
 
     /**
-     *
-     * @api
-     * @var mixed $traverser 
-     * @access private
-     * @link
-     */
-    static private $traverser = null;
-
-    /**
      * 
      * @api
      * @return mixed $parser
@@ -53,10 +44,7 @@ class Analytic
      */
     static public function getTraverser ()
     {
-        if(self::$traverser === null) {
-            self::$traverser = new NodeTraverser;
-        }
-        return self::$traverser;
+        return new NodeTraverser;
     }
     
     static public function analyticCode($code)
@@ -67,7 +55,6 @@ class Analytic
         $traverser = self::getTraverser();
         $traverser->addVisitor(new NodeVisitor($ast));
         $traverser->traverse($stmts);
-        self::$traverser = null;
         return $ast;
     }
     

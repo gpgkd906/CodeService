@@ -23,6 +23,12 @@ class PropertyWrapper extends AbstractWrapper
     {
         return array_search($this->getNode()->type, self::$accessTable);
     }
+
+    public function getDefaultTypeInfer()
+    {
+        $default = $this->getNode()->props[0]->default;
+        return parent::getTypeInfer($default);
+    }
     
     public function setStatic($static = true)
     {
@@ -42,6 +48,16 @@ class PropertyWrapper extends AbstractWrapper
 
     public function getDefault()
     {
-        
+        return $this->getNode()->props[0]->default->name->__toString();
+    }
+
+    public function getName()
+    {
+        return $this->getNode()->props[0]->name;
+    }
+
+    public function setName($name)
+    {
+        $this->getNode()->props[0]->name = $name;
     }
 }

@@ -13,7 +13,7 @@ use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Const_;
 use PhpParser\Node\Scalar;
 use PhpParser\Node\Expr;
-use PhpParser\Comment\Doc;
+use PhpParser\Comment;
 
 class AbstractWrapper
 {
@@ -70,31 +70,66 @@ class AbstractWrapper
     {
         switch(true) {
         case is_string($value):
-            $value = new Scalar\String_($value);
+            $valueNode = new Scalar\String_($value);
             break;
         case is_integer($value):
-            $value = new Scalar\LNumber($value);
+            $valueNode = new Scalar\LNumber($value);
             break;
         case is_float($value):
-            $value = new Scalar\DNumber($value);
+            $valueNode = new Scalar\DNumber($value);
             break;
         case is_bool($value):
             if($value) {
-                $value = new Expr\ConstFetch(new Name('true'));
+                $valueNode = new Expr\ConstFetch(new Name('true'));
             } else {
-                $value = new Expr\ConstFetch(new Name('false'));
+                $valueNode = new Expr\ConstFetch(new Name('false'));
             }
             break;
         case is_array($value):
-            $value = new Expr\Array_($value);
+            $valueNode = new Expr\Array_($value);
             break;
         default:
-            $value = new Expr\ConstFetch(new Name('null'));
+            $valueNode = new Expr\ConstFetch(new Name('null'));
             break;
         }
-        return $value;
+        return $valueNode;
     }
 
+    public function getTypeInfer($valueNode)
+    {
+        $type = "mixed";
+        switch(get_class($valueNode)) {
+        case Scalar\String_::class:
+            $type = "string";
+            break;
+        case Scalar\LNumber::class:
+            $type = "integer";
+            break;
+        case Scalar\DNumber::class:
+            $type = "float";
+            break;
+        case Expr\ConstFetch::class:
+            $valueNodeName = $valueNode->name->__toString();
+            switch($valueNodeName) {
+            case "true":
+            case "false":
+                $type = "boolean";
+                break;
+            case "null":
+                $type = "optional";
+                break;
+            }
+            break;
+        case Expr\Array_::class:
+            $type = "array";
+            break;
+        default:
+            //pass with mixed
+            break;
+        }
+        return $type;
+    }
+    
     public function nodeWalk($call, $nodeType = null)
     {
         if($nodeType !== null) {
@@ -116,20 +151,20 @@ class AbstractWrapper
     public function getComment()
     {
         if($this->comment === null) {
-            $this->comment = $this->getNode()->getDocComment();
-            $node = $this->getNode();
-            if($this->comment === null) {
-                $this->comment = new Doc("");
-                $this->getNode()->setAttribute("comments", [$this->comment]);
+            $commentNode = $this->getNode()->getDocComment();
+            if($commentNode === null) {
+                $commentNode = new Comment\Doc("");
+                $this->getNode()->setAttribute("comments", [$commentNode]);
             }
+            $this->comment = new CommentWrapper($commentNode);
         }
-        return $this->comment->getText();
+        return $this->comment;
     }
-
+    
     public function setComment($comment)
     {
         $this->getComment();
-        $this->comment->setText($comment);
+        $this->comment->setContent($comment);
     }
 
     public function findNode($nodeType, $finder)
