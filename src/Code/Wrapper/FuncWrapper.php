@@ -36,11 +36,13 @@ class FuncWrapper extends AbstractWrapper
     public function getReturn()
     {
         $node = $this->getNode();
-        foreach($node->stmts as $key => $stmt) {
-            if($stmt->getType() === self::RETURN_TYPE) {
-                return new ReturnWrapper($stmt);
+        if($node && $node->stmts) {
+            foreach($node->stmts as $key => $stmt) {
+                if($stmt->getType() === self::RETURN_TYPE) {
+                    return new ReturnWrapper($stmt);
+                }
             }
-        }        
+        }
     }
 
     public function appendProcess($process)
@@ -73,7 +75,7 @@ class FuncWrapper extends AbstractWrapper
                 return new ParamWrapper($paramNode);
             }
         }
-    }    
+    }
 
     public function paramWalk($call)
     {

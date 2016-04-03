@@ -14,6 +14,18 @@ class ParamWrapper extends AbstractWrapper
         $this->getNode()->name = $newParam;
     }
 
+    public function getDefaultTypeInfer()
+    {
+        $default = null;
+        if($this->getNode()->type) {
+            return $this->getNode()->type->toString();
+        }
+        if(!empty($this->getNode()->props)) {
+            $default = $this->getNode()->props[0]->default;
+        }
+        return parent::getTypeInfer($default);
+    }
+    
     public function getDefault()
     {
         $default = $this->getNode()->default;

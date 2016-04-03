@@ -162,15 +162,16 @@ class AstWrapper extends AbstractWrapper
         if($this->isEmpty()) {
             return false;
         }
-        if($this->comment === null) {            
-            $this->comment = $this->getNode()[0]->getDocComment();
+        if($this->comment === null) {
             $node = $this->getNode()[0];
-            if($this->comment === null) {
-                $this->comment = new Doc("");
-                $node->setAttribute("comments", [$this->comment]);
+            $commentNode = $node->getDocComment();
+            if($commentNode === null) {
+                $commentNode = new Doc("");
+                $node->setAttribute("comments", [$commentNode]);
             }
+            $this->comment = new CommentWrapper($commentNode);
         }
-        return $this->comment->getText();
+        return $this->comment;
     }
 
     public function setComment($comment)

@@ -2,6 +2,7 @@
 
 namespace CodeService\Code\Wrapper;
 
+use PhpParser\Node\Stmt\Class_ as Stmt_Class;
 use PhpParser\Builder\Class_;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\Name;
@@ -14,6 +15,12 @@ use PhpParser\Node\Expr;
 
 class ClassWrapper extends AbstractWrapper
 {
+    static public $accessTable = [
+        'public' => Stmt_Class::MODIFIER_PUBLIC,
+        'protected' => Stmt_Class::MODIFIER_PROTECTED,
+        'private' => Stmt_Class::MODIFIER_PRIVATE,
+    ];
+    
     private $group = [
         'Stmt_TraitUse'    => [],
         'Stmt_ClassConst'  => [],
@@ -110,14 +117,14 @@ class ClassWrapper extends AbstractWrapper
             return $stmt->name === $method;
         });
         if($node) {
-            return new FuncWrapper($node);
+            return new MethodWrapper($node);
         }
     }
 
     public function methodWalk($call)
     {
         $this->nodeWalk(function($method) use ($call) {
-            $method = new FuncWrapper($method);
+            $method = new MethodWrapper($method);
             call_user_func($call, $method);
         }, 'Stmt_ClassMethod');
     }

@@ -46,9 +46,12 @@ class AbstractWrapper
         return self::$factory;
     }
     
-    public function toString()
+    public function toString($stmts = null)
     {
-        return Formatter::format($this->getStmts());
+        if($stmts === null) {
+            $stmts = $this->getStmts();
+        }
+        return Formatter::format($stmts);
     }
 
     public function toHtml()
@@ -96,8 +99,11 @@ class AbstractWrapper
     }
 
     public function getTypeInfer($valueNode)
-    {
+    {        
         $type = "mixed";
+        if(empty($value) || !is_object($valueNode)) {
+            return $type;
+        }
         switch(get_class($valueNode)) {
         case Scalar\String_::class:
             $type = "string";

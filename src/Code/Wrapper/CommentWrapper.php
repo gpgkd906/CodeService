@@ -123,9 +123,14 @@ class CommentWrapper extends AbstractWrapper
 
     public function reload()
     {
-        $commentLines = array_map(function ($summaryLine) {
-            return " " . $summaryLine;
-        }, explode(PHP_EOL, $this->getSummary()));
+        $summary = $this->getSummary();
+        if(is_array($summary)) {
+            $commentLines = $summary;
+        } else {
+            $commentLines = array_map(function ($summaryLine) {
+                return " " . $summaryLine;
+            }, explode(PHP_EOL, $this->getSummary()));
+        }
         $this->tagWalk(function($tag) use (&$commentLines) {
             $commentLines[] = $tag->render();
         });        
