@@ -17,36 +17,41 @@ class CommentWrapper extends AbstractWrapper
     private $tags = null;
     private $content = null;
 
-    private static $docBlockFactory = null;
-    private static $standardTagFactory = null;
+    private $standardTagFactory = null;
     
     private function makeDocBlock()
     {
         if($this->docBlock === null) {
-            if(self::$docBlockFactory === null) {
-                self::$docBlockFactory = DocBlockFactory::createInstance();
-            }
+            $docBlockFactory = DocBlockFactory::createInstance();
             $content = $this->getContent();
             if(empty($content)) {
                 $content = join(PHP_EOL, ["/**", "*/"]);
             }
-            $this->docBlock = self::$docBlockFactory->create($content);
+            try {
+                $this->docBlock = $docBlockFactory->create($content);
+            } catch(Exception $e) {
+                var_dump($content);die;
+            }
         }
         return $this->docBlock;
     }
 
     private function makeTag($tagLine)
     {
-        if(self::$standardTagFactory === null) {
+        if($this->standardTagFactory === null) {
             $fqsenResolver = new FqsenResolver();
             $tagFactory = new StandardTagFactory($fqsenResolver);
             $descriptionFactory = new DescriptionFactory($tagFactory);
             
             $tagFactory->addService($descriptionFactory);
             $tagFactory->addService(new TypeResolver($fqsenResolver));
-            self::$standardTagFactory = $tagFactory;
+            $this->standardTagFactory = $tagFactory;
         }
-        return self::$standardTagFactory->create($tagLine);
+        try {
+            return $this->standardTagFactory->create($tagLine);
+        } catch(Exception $e) {
+            var_dump($content);die;
+        }
     }
     
     public function getSummary()

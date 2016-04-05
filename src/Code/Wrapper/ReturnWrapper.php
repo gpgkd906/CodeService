@@ -17,6 +17,14 @@ use PhpParser\Node\Expr\BinaryOp\Coalesce;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\ClassConstFetch;
+use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Scalar\LNumber;
+use PhpParser\Node\Expr\BinaryOp\Minus;
+use PhpParser\Node\Scalar\Encapsed;
+use PhpParser\Node\Expr\BinaryOp\BooleanAnd;
+use PhpParser\Node\Expr\BinaryOp\BooleanOr;
+use PhpParser\Node\Expr\BinaryOp\Greater;
 
 class ReturnWrapper extends AbstractWrapper
 {
@@ -27,7 +35,7 @@ class ReturnWrapper extends AbstractWrapper
         }
         switch(get_class($expr)) {
         case PropertyFetch::class:
-            return $expr->var->name . " " . $expr->name;
+            return $expr->var->name . " " . (is_object($expr->name) ? $this->toString($expr->name): $expr->name);
             break;
         case StaticPropertyFetch::class:
             return "static " . $this->toString($expr->class) . " " . $expr->name;
@@ -57,28 +65,44 @@ class ReturnWrapper extends AbstractWrapper
         case Coalesce::class:
             return "Optional < " . $this->getExpr($expr->left) . " , " . $this->toString($expr->right) . " >";
             break;
-       case Empty_::class:
-            return "boolean " . $this->toString($expr); 
-            break;
         case Concat::class:
             return "string " . $this->toString($expr);
             break;
+        case Empty_::class:
+        case BooleanAnd::class:
+        case BooleanOr::class:
+        case Greater::class:
+            return "boolean " . $this->toString($expr); 
+            break;
+        case Array_::class:
+            return "Array"; break;
+        case String_::class:
+        case Encapsed::class:
+            return "String"; break;
+        case LNumber::class:
+            return "Integer"; break;
         case New_::class:
             return "instance " . $this->toString($expr->class);
             break;
         case ConstFetch::class:
-            return [
-                'true' => 'boolean',
-                'false' => 'boolean',
-                'null' => 'null',                
-            ][$this->toString($expr->name)];
+            switch($expr->name) {
+            case 'true':
+            case 'false':
+                return 'boolean';
+                break;
+            case 'null': return 'null'; break;
+            default: return "CONST " . $expr->name;
+            }
             break;
         case ClassConstFetch::class:
             return "ClassConstant " . $this->toString($expr->class) . " " . $expr->name;
             break;
+        case Minus::class:
+            return "Number";
+            break;
         default:
             
-            var_dump($expr, $this->toString());die;
+            var_dump($expr, $this->toString());throw new \Exception("CommentWrapper");
             break;
         }
     }

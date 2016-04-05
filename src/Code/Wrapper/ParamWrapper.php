@@ -18,7 +18,11 @@ class ParamWrapper extends AbstractWrapper
     {
         $default = null;
         if($this->getNode()->type) {
-            return $this->getNode()->type->toString();
+            $type = $this->getNode()->type;
+            if(is_string($type)) {
+                return $type;
+            }
+            return $type->toString();
         }
         if(!empty($this->getNode()->props)) {
             $default = $this->getNode()->props[0]->default;
