@@ -16,19 +16,20 @@ class NodeVisitor extends NodeVisitorAbstract
         Stmt\TraitUse::class => 'mapTraitUse',
         Stmt\Property::class => 'mapProperty',
         Stmt\ClassConst::class => 'mapConst',
+        Stmt\Return_::class => 'mapReturn',
     ];
-    
+
     /**
      *
      * @api
-     * @var mixed $astWrapper 
+     * @var mixed $astWrapper
      * @access private
      * @link
      */
     private $astWrapper = null;
 
     /**
-     * 
+     *
      * @api
      * @param mixed $astWrapper
      * @return mixed $astWrapper
@@ -40,7 +41,7 @@ class NodeVisitor extends NodeVisitorAbstract
     }
 
     /**
-     * 
+     *
      * @api
      * @return mixed $astWrapper
      * @link
@@ -49,7 +50,7 @@ class NodeVisitor extends NodeVisitorAbstract
     {
         return $this->astWrapper;
     }
-    
+
     public function enterNode(Node $node) {
         foreach($this->dispatch as $class => $dispatch) {
             if(is_a($node, $class)) {
@@ -90,10 +91,14 @@ class NodeVisitor extends NodeVisitorAbstract
     {
         $this->getAstWrapper()->addPropertyNode($node->props[0]->name, $node);
     }
-    
+
     private function mapConst(Stmt\ClassConst $node)
     {
         $this->getAstWrapper()->addClassConstNode($node->consts[0]->name, $node);
     }
-}
 
+    private function mapReturn(Stmt\Return_ $node)
+    {
+        $this->getAstWrapper()->setReturn($node);
+    }
+}

@@ -25,7 +25,9 @@ class AstWrapper extends AbstractWrapper
     private $classConst = [];
     private $classWrapper = null;
     private $namespaceWrapper = null;
-    
+    private $return = null;
+    private $returnWrapper = null;
+
     public function setUseNode ($use)
     {
         return $this->use = $use;
@@ -35,7 +37,7 @@ class AstWrapper extends AbstractWrapper
     {
         return $this->use;
     }
-    
+
     public function addUseNode ($name, $use)
     {
         return $this->use[$name] = $use;
@@ -70,7 +72,7 @@ class AstWrapper extends AbstractWrapper
     {
         return $this->traitUse;
     }
-    
+
     public function addTraitUseNode ($name, $traitUse)
     {
         return $this->traitUse[$name] = $traitUse;
@@ -120,7 +122,7 @@ class AstWrapper extends AbstractWrapper
     {
         return $this->classConst[$name] = $classConst;
     }
-    
+
     public function getNamespace ()
     {
         if($this->namespaceWrapper === null) {
@@ -163,15 +165,14 @@ class AstWrapper extends AbstractWrapper
             return false;
         }
         if($this->comment === null) {
+            $this->comment = $this->getNode()[0]->getDocComment();
             $node = $this->getNode()[0];
-            $commentNode = $node->getDocComment();
-            if($commentNode === null) {
-                $commentNode = new Doc("");
-                $node->setAttribute("comments", [$commentNode]);
+            if($this->comment === null) {
+                $this->comment = new Doc("");
+                $node->setAttribute("comments", [$this->comment]);
             }
-            $this->comment = new CommentWrapper($commentNode);
         }
-        return $this->comment;
+        return $this->comment->getText();
     }
 
     public function setComment($comment)
@@ -182,7 +183,20 @@ class AstWrapper extends AbstractWrapper
         $this->getComment();
         $this->comment->setText($comment);
     }
-    
+
+    public function setReturn($return)
+    {
+        $this->return = $return;
+    }
+
+    public function getReturn()
+    {
+        if ($this->returnWrapper === null) {
+            $this->returnWrapper = new ReturnWrapper($this->return);
+        }
+        return $this->returnWrapper;
+    }
+
     public function toCode()
     {
         return "<?php " . PHP_EOL . PHP_EOL . $this->toString();

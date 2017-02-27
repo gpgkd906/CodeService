@@ -17,41 +17,36 @@ class CommentWrapper extends AbstractWrapper
     private $tags = null;
     private $content = null;
 
-    private $standardTagFactory = null;
+    private static $docBlockFactory = null;
+    private static $standardTagFactory = null;
     
     private function makeDocBlock()
     {
         if($this->docBlock === null) {
-            $docBlockFactory = DocBlockFactory::createInstance();
+            if(self::$docBlockFactory === null) {
+                self::$docBlockFactory = DocBlockFactory::createInstance();
+            }
             $content = $this->getContent();
             if(empty($content)) {
                 $content = join(PHP_EOL, ["/**", "*/"]);
             }
-            try {
-                $this->docBlock = $docBlockFactory->create($content);
-            } catch(Exception $e) {
-                var_dump($content);die;
-            }
+            $this->docBlock = self::$docBlockFactory->create($content);
         }
         return $this->docBlock;
     }
 
     private function makeTag($tagLine)
     {
-        if($this->standardTagFactory === null) {
+        if(self::$standardTagFactory === null) {
             $fqsenResolver = new FqsenResolver();
             $tagFactory = new StandardTagFactory($fqsenResolver);
             $descriptionFactory = new DescriptionFactory($tagFactory);
             
             $tagFactory->addService($descriptionFactory);
             $tagFactory->addService(new TypeResolver($fqsenResolver));
-            $this->standardTagFactory = $tagFactory;
+            self::$standardTagFactory = $tagFactory;
         }
-        try {
-            return $this->standardTagFactory->create($tagLine);
-        } catch(Exception $e) {
-            var_dump($content);die;
-        }
+        return self::$standardTagFactory->create($tagLine);
     }
     
     public function getSummary()
@@ -128,14 +123,9 @@ class CommentWrapper extends AbstractWrapper
 
     public function reload()
     {
-        $summary = $this->getSummary();
-        if(is_array($summary)) {
-            $commentLines = $summary;
-        } else {
-            $commentLines = array_map(function ($summaryLine) {
-                return " " . $summaryLine;
-            }, explode(PHP_EOL, $this->getSummary()));
-        }
+        $commentLines = array_map(function ($summaryLine) {
+            return " " . $summaryLine;
+        }, explode(PHP_EOL, $this->getSummary()));
         $this->tagWalk(function($tag) use (&$commentLines) {
             $commentLines[] = $tag->render();
         });        

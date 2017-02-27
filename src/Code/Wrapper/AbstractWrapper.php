@@ -20,7 +20,7 @@ class AbstractWrapper
     static private $factory = null;
     private $stmts = null;
     protected $comment = null;
-    
+
     public function __construct($node = null)
     {
         if($node) {
@@ -32,26 +32,23 @@ class AbstractWrapper
     {
         return $this->stmts;
     }
-    
+
     public function getName()
     {
         return $this->getNode()->name;
     }
-    
-    protected function getFactory()
+
+    public function getFactory()
     {
         if(self::$factory === null) {
             self::$factory = new BuilderFactory;
         }
         return self::$factory;
     }
-    
-    public function toString($stmts = null)
+
+    public function toString()
     {
-        if($stmts === null) {
-            $stmts = $this->getStmts();
-        }
-        return Formatter::format($stmts);
+        return Formatter::format($this->getStmts());
     }
 
     public function toHtml()
@@ -89,7 +86,7 @@ class AbstractWrapper
             }
             break;
         case is_array($value):
-            $valueNode = new Expr\Array_($value);
+            $valueNode = new Expr\Array_($value, []);
             break;
         default:
             $valueNode = new Expr\ConstFetch(new Name('null'));
@@ -99,11 +96,8 @@ class AbstractWrapper
     }
 
     public function getTypeInfer($valueNode)
-    {        
+    {
         $type = "mixed";
-        if(empty($value) || !is_object($valueNode)) {
-            return $type;
-        }
         switch(get_class($valueNode)) {
         case Scalar\String_::class:
             $type = "string";
@@ -135,7 +129,7 @@ class AbstractWrapper
         }
         return $type;
     }
-    
+
     public function nodeWalk($call, $nodeType = null)
     {
         if($nodeType !== null) {
@@ -153,7 +147,7 @@ class AbstractWrapper
             }
         }
     }
-    
+
     public function getComment()
     {
         if($this->comment === null) {
@@ -166,7 +160,7 @@ class AbstractWrapper
         }
         return $this->comment;
     }
-    
+
     public function setComment($comment)
     {
         $this->getComment();
