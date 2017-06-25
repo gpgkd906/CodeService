@@ -31,12 +31,12 @@ class CodeService
             }
         }
     }
-    
-    public function analysis($file)
+
+    public function analysis($file, $version = null)
     {
-        return Analytic::analytic($file);
+        return Analytic::analytic($file, $version);
     }
-    
+
     public function createGenerator()
     {
         return Analytic::analyticCode(join('', [
