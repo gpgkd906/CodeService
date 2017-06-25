@@ -38,7 +38,7 @@ function fileDoc($file, $ast, $comment)
     }, $holders);
     $comment->reload();
 }
-    
+
 function classDoc($class, $comment)
 {
     if(!$comment->getSummary()) {
@@ -108,10 +108,10 @@ function propertyDoc($property, $comment)
 function methodDoc($method, $comment)
 {
         /**
-     * 
+     *
      * @api
-     * @param   
-     * @param    
+     * @param
+     * @param
      * @return
      * @link
      */
@@ -157,12 +157,12 @@ function methodDoc($method, $comment)
 
 $service = new CodeService;
 
-$service->ls("/Users/gpgkd906/dev/framework/Framework", function($_, $file) use ($service) {
+$service->ls("/Users/chen/docker/chen_dev/application/Framework", function($_, $file) use ($service) {
     if(pathinfo($file, PATHINFO_EXTENSION) !== "php") {
         return false;
     }
     $ast = $service->analysis($file);
-    
+
     echo $file, PHP_EOL;
     if(!$ast->isEmpty()) {
         fileDoc($file, $ast, $ast->getComment());
@@ -175,7 +175,6 @@ $service->ls("/Users/gpgkd906/dev/framework/Framework", function($_, $file) use 
         });
         $class->methodWalk(function($method) {
             methodDoc($method, $method->getComment());
-        });        
+        });
     }
 });
-
