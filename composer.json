@@ -1,9 +1,9 @@
 {
     "name": "gpgkd906/code-generator",
     "require": {
-        "nikic/php-parser": "^3.0",
-	"phpdocumentor/reflection-docblock": "^3.0",
-	"phpdocumentor/type-resolver": "^0.1.5"
+        "nikic/php-parser": "*",
+	    "phpdocumentor/reflection-docblock": "*",
+        "phpdocumentor/type-resolver": "*"
     },
     "type": "library",
     "license": "MIT",
@@ -14,9 +14,9 @@
         }
     ],
     "autoload": {
-	"psr-4": {
-	    "CodeService\\": "src"
-	}
+        "psr-4": {
+            "CodeService\\": "src"
+        }
     },
     "minimum-stability": "beta"
 }

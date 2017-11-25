@@ -18,7 +18,7 @@ class ClassWrapper extends AbstractWrapper
         'Stmt_TraitUse'    => [],
         'Stmt_ClassConst'  => [],
         'Stmt_Property'    => [],
-        'Stmt_ClassMethod' => [],        
+        'Stmt_ClassMethod' => [],
     ];
 
     public function setName($newClass)
@@ -51,7 +51,7 @@ class ClassWrapper extends AbstractWrapper
     {
         $test = new FullyQualified($trait);
         $node = $this->findNode('Stmt_TraitUse', function($stmt) use ($test) {
-            return $stmt->traits[0]->parts === $test->parts;            
+            return $stmt->traits[0]->parts === $test->parts;
         });
         if($node) {
             return new TraitUseWrapper($node);
@@ -74,7 +74,7 @@ class ClassWrapper extends AbstractWrapper
             return new ConstWrapper($node);
         }
     }
-    
+
     public function appendProperty($property, $value = null, $access = 'private')
     {
         $factory = $this->getFactory();
@@ -84,7 +84,7 @@ class ClassWrapper extends AbstractWrapper
         $property->setDefault($value);
         $this->addStmt($property->getNode());
     }
-    
+
     public function getProperty($property)
     {
         $node = $this->findNode('Stmt_Property', function($stmt) use($property) {
@@ -121,7 +121,7 @@ class ClassWrapper extends AbstractWrapper
             call_user_func($call, $method);
         }, 'Stmt_ClassMethod');
     }
-    
+
     public function propertyWalk($call)
     {
         $this->nodeWalk(function($property) use ($call) {
@@ -129,7 +129,7 @@ class ClassWrapper extends AbstractWrapper
             call_user_func($call, $property);
         }, 'Stmt_Property');
     }
-    
+
 
     public function addStmt($stmt)
     {

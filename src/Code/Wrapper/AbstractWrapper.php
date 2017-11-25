@@ -3,6 +3,7 @@
 namespace CodeService\Code\Wrapper;
 
 use CodeService\Code\Formatter;
+use CodeService\Code\Analytic;
 use PhpParser\BuilderFactory;
 use PhpParser\Builder\Class_;
 use PhpParser\Node\Stmt\TraitUse;
@@ -179,6 +180,19 @@ class AbstractWrapper
         }
     }
 
+    public function appendProcess($process)
+    {
+        $process .= ';';
+        $ast = Analytic::analyticCode('<?php ' . $process);
+        $processNode = $ast->getStmts()[0];
+        $node = $this->getNode();
+        $count = count($node->stmts);
+        $node->stmts = array_merge(
+            array_slice($node->stmts, 0, -1),
+            [$processNode],
+            array_slice($node->stmts, -1)
+        );
+    }
     public function getNodeApi()
     {
         return get_class_methods($this->getNode());
