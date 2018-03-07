@@ -79,22 +79,22 @@ class NodeVisitor extends NodeVisitorAbstract
     private function mapTraitUse(Stmt\TraitUse $node)
     {
         $name = join('\\', $node->traits[0]->parts);
-        $this->getAstWrapper()->addTraitUseNode($name, $node);
+        $this->getAstWrapper()->addTraitUseNode((string) $name, $node);
     }
 
     private function mapMethod(Stmt\ClassMethod $node)
     {
-        $this->getAstWrapper()->addMethodNode($node->name, $node);
+        $this->getAstWrapper()->addMethodNode((string) $node->name, $node);
     }
 
     private function mapProperty(Stmt\Property $node)
     {
-        $this->getAstWrapper()->addPropertyNode($node->props[0]->name, $node);
+        $this->getAstWrapper()->addPropertyNode((string) $node->props[0]->name, $node);
     }
 
     private function mapConst(Stmt\ClassConst $node)
     {
-        $this->getAstWrapper()->addClassConstNode($node->consts[0]->name, $node);
+        $this->getAstWrapper()->addClassConstNode((string) $node->consts[0]->name, $node);
     }
 
     private function mapReturn(Stmt\Return_ $node)

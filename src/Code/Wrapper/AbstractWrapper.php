@@ -36,7 +36,7 @@ class AbstractWrapper
 
     public function getName()
     {
-        return $this->getNode()->name;
+        return (string) $this->getNode()->name;
     }
 
     public function getFactory()
@@ -87,7 +87,7 @@ class AbstractWrapper
             }
             break;
         case is_array($value):
-            $valueNode = new Expr\Array_($value, []);
+            $valueNode = new Expr\Array_($value);
             break;
         default:
             $valueNode = new Expr\ConstFetch(new Name('null'));

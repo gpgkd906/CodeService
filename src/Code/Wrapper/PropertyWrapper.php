@@ -11,7 +11,7 @@ class PropertyWrapper extends AbstractWrapper
             'protected' => Class_::MODIFIER_PROTECTED,
             'private' => Class_::MODIFIER_PRIVATE,
     ];
-    
+
     public function setAccess($access)
     {
         if(isset(self::$accessTable[$access])) {
@@ -29,7 +29,7 @@ class PropertyWrapper extends AbstractWrapper
         $default = $this->getNode()->props[0]->default;
         return parent::getTypeInfer($default);
     }
-    
+
     public function setStatic($static = true)
     {
         $target = $this->getNode()->type ^ Class_::MODIFIER_STATIC;
@@ -40,7 +40,7 @@ class PropertyWrapper extends AbstractWrapper
             $this->getNode()->type = $target > $old ? $old : $target;
         }
     }
-    
+
     public function setDefault($value)
     {
         $this->getNode()->props[0]->default = $this->makeValue($value);
@@ -53,7 +53,7 @@ class PropertyWrapper extends AbstractWrapper
 
     public function getName()
     {
-        return $this->getNode()->props[0]->name;
+        return (string) $this->getNode()->props[0]->name;
     }
 
     public function setName($name)
